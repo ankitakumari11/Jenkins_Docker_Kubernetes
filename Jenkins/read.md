@@ -3,9 +3,11 @@
 <img width="1373" height="791" alt="image" src="https://github.com/user-attachments/assets/8cbb139c-b966-4b3b-adb1-4d01b55676ab" />
 
 
+### <ins>MANUALLY BUILDING AND TESTING THE CODE WITHOUT THE USE OF JENKINS</ins>  
+
 Lets create devops server (to pull and build the code)  
 
-### Devops server
+#### ->Devops server: 
 
 Create a ec2 instance on aws:  ubuntu , t2-medium  
   
@@ -44,7 +46,7 @@ ls #u will see .war file ( this is build)
 
 Now the work of 1st server (source server) is done i.e building of code. Now we will copy the build code to testing server and there we will test it.
 
-### Testing Server
+#### ->Testing Server:
 
 - Create a server
   - Ubuntu
@@ -78,7 +80,7 @@ Now here inside the webapps of apache tomcat , we will copy the .war file from s
 
 Go back to source server.  
 
-### SOURCE SERVER
+#### ->SOURCE SERVER:
 
 Now we need to establish connection btw source and testing server. Here already ssh rule from 0.0.0.0/0 inbound is applied so no need to touch security groups. But need to enable authentication so copy the public key from source to destination server.  
   
@@ -112,3 +114,60 @@ target:
   
 <img width="989" height="336" alt="image" src="https://github.com/user-attachments/assets/5005a383-87fd-427b-88e2-f750f3706f57" />
 
+#### ->Testing (target server):
+
+Now we need to run tomcat server to test the application:
+```
+cd distro/tomcat-apache10/bin
+./startup.sh
+
+```
+
+<img width="1801" height="420" alt="image" src="https://github.com/user-attachments/assets/3b783682-89e2-4f63-a6c0-3178ff9fce35" />  
+
+Now since tomcat server's default port is 8080 , so go to security groups and add inbound tcp 8080 from 0.0.0.0/0
+
+<img width="1879" height="852" alt="image" src="https://github.com/user-attachments/assets/35ca7bb7-e637-40e3-9dca-46e5798bc36e" />
+
+Now go to url : http://<public ip of target server>:8080/srtech
+
+<img width="1920" height="677" alt="image" src="https://github.com/user-attachments/assets/74303fbf-9edf-43d5-acb1-d5be3f4e4b4a" />
+
+  
+> [!IMPORTANT]
+> Now rather than manually pulling code from github , building the code and copy and pasting it to testing server
+> We can automate with the help of Jenkins
+
+
+### JENKINS SERVER 
+
+- Create a server named - Jenkins-server or anything
+- ubuntu  , t2-medium
+- launch the server and take connection
+```
+apt-get update
+apt-get install openjdk-17-jdk -y
+java --version
+mkdir distro
+chmod 777 distro
+cd distro
+# install apache-tomcat to run host jenkins on the server (jenkins website)
+wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.43/bin/apache-tomcat-10.1.43.tar.gz
+tar -xzvf apache-tomcat-10.1.43.tar.gz
+rm apache-tomcat-10.1.43.tar.gz
+```
+
+Now u need to install jenkins:
+
+- Go to website : https://www.jenkins.io/doc/book/installing/linux/
+- Or directly run below commands (website also has the same commands)
+  
+```
+sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+```
