@@ -288,6 +288,72 @@ Now go to jenkins console
 - now save
 - build it
 - <img width="1840" height="768" alt="image" src="https://github.com/user-attachments/assets/44df9535-8345-453b-a5f4-4ecd8f148e4b" />
+- Now u can see on testing server , we have .war file inside webserver of apache:
+- <img width="938" height="265" alt="image" src="https://github.com/user-attachments/assets/d7835d0c-b644-4a77-8be1-55c0314e38b2" />
+- Now add inbound rule of 8080 on the testing server form 0.0.0.0/0 to access teh website from outside
+- <img width="1841" height="799" alt="image" src="https://github.com/user-attachments/assets/26540b70-bc4b-48fb-8cef-c0af9f41d492" />
+- U need to start apache tomcat server on the testing server so:
+  - cd /bin
+  - ./startup.sh
+  - <img width="1860" height="420" alt="image" src="https://github.com/user-attachments/assets/ce6e78b8-985a-4749-93be-730f568ce18d" />
+- Now u can access the url : http://<public ip of testing server>:8080/srtech
+  - <img width="1920" height="724" alt="image" src="https://github.com/user-attachments/assets/f9910c0b-af04-40a6-9ba7-1f68203230b8" />
+
+> [!IMPORTANT]
+> - Now jenkins build the code using maven.
+> - We just installed jenkins , jdk, maven , tomcat on our jenkins server and build the code and then copied it to testing server using execute shell of jenkins.
+> - Now rather manually clone , build (we are manually clicking on build button right), we can automate it.
+> - due to automation , jenkins will itself go and check the github if any new code or any new changes have been pushed , if yes then it will pull the code and build it automatically
+
+**Methods to build code automatically**
+- **Poll SCM**: Whenever new code comes , jenkins will pull the code from github.
+- **Webhook**: Whenever new code comes, github will go and tell jenkins.
+
+1. **POLL SCM MEHTHOD**
+   - Go to job on jenkins console
+   - configure
+   - Trigger
+   - Click on POLLSCM
+   - schedule : * * * * * {means it will go and check at every second of every minutes of every hour of every day of every year}
+   - <img width="1899" height="1022" alt="image" src="https://github.com/user-attachments/assets/9cadf45f-0415-44cd-b117-7c0a7ea4aea8" />
+
+   - Clone the repo on some another server , make changes and push it.
+   - <img width="1018" height="343" alt="image" src="https://github.com/user-attachments/assets/f9c34802-aa09-45a8-9065-f24b29fb9c58" />
+
+   - Now you will see , the build occured automatically
+   - <img width="1705" height="995" alt="image" src="https://github.com/user-attachments/assets/5838a034-bfbe-4e13-b525-1e7edd5f5f34" />
+   - See now it build automatically the 2nd build:
+   - <img width="1598" height="913" alt="image" src="https://github.com/user-attachments/assets/34c09eba-8fac-4e9d-891c-19f8f5547110" />
+
+
+  2. **WEBHOOK MEHTHOD**
+     - Go to the job configure in jenkins console
+     - Triggers -> Git hubhook -> save
+       - <img width="1915" height="1021" alt="image" src="https://github.com/user-attachments/assets/ed1d7ca2-2d75-42b9-8be4-a38c2aead4d5" />
+
+     - Go to github -> your repo -> settings -> webhook -> add webhook
+       - <img width="1911" height="944" alt="image" src="https://github.com/user-attachments/assets/da16545f-0a17-44d8-8d53-820c66af8a64" />
+       - 
+
+       - copy the url of jenkins : http://<public ip of jenkins server>:8080/jenkins/
+       - paste the url in payload : http://<public ip of jenkins server>:8080/jenkins/github-webhook/
+       - <img width="1852" height="978" alt="image" src="https://github.com/user-attachments/assets/9594bf3d-0052-4a93-b630-0c50340b7e88" />
+
+       - content-type : application/json -> save
+       - <img width="1891" height="921" alt="image" src="https://github.com/user-attachments/assets/d71984d1-90f6-4ad6-a6e2-76c278c81312" />
+       - Now again make some changes in the github code and push it , now u will see new build applying:
+         - <img width="864" height="341" alt="image" src="https://github.com/user-attachments/assets/a67061d0-2d51-4ba7-8beb-609415217eb2" />
+
+
+
+       
+
+
+
+
+
+
+
 
   
 
