@@ -154,7 +154,7 @@ cd distro
 # install apache-tomcat to run host jenkins on the server (jenkins website)
 wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.43/bin/apache-tomcat-10.1.43.tar.gz
 tar -xzvf apache-tomcat-10.1.43.tar.gz
-rm apache-tomcat-10.1.43.tar.gz
+x
 ```
 
 Now u need to install jenkins:
@@ -171,3 +171,22 @@ echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
 sudo apt-get update
 sudo apt-get install jenkins
 ```
+- Apply inbound rule of 8080 on jenkins server for tomcat
+- start tomcat server now
+```
+cd distro/tomcat-apache10/bin
+./startup.sh
+```
+- go to url : http://<public ip of server>:8080/jenkins
+- From jenkins server copy the password from : cat /var/lib/jenkins/secrets/initialAdminPassword
+- Install necessary plugins
+  
+<img width="1917" height="1063" alt="image" src="https://github.com/user-attachments/assets/8f2b7b94-b848-4684-8b1d-dc032de9325f" />
+
+-
+
+<img width="1817" height="1069" alt="image" src="https://github.com/user-attachments/assets/3e15a421-a8c0-41fe-ad3e-0f6688356e85" />
+
+- Create your account and keep the credentials with yourself
+
+<img width="1499" height="969" alt="image" src="https://github.com/user-attachments/assets/1d19117e-becd-4dcd-ad91-6a73e01906af" />
