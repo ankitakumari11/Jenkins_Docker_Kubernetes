@@ -147,8 +147,31 @@ ENTRYPOINT service nginx start && bash
 </html>
 ```
 
+Now build the image (without creating container , with the help of Dockerfile)  
+```
+docker build -t "ankitakumari346/new_second_img" .
+```
+This will take all the content present inside present directory i.e Dockerfile and index.html  
+
+<img width="1872" height="373" alt="image" src="https://github.com/user-attachments/assets/fb1d6f85-c7a7-4dd6-a7e5-5021c065d214" />
+
+Create a container out of that image:  
+```
+docker run -it -p 8080:80 --name ngnix-cont ankitakumari346/new_second_img /bin/bash
+```
+
+<img width="1876" height="304" alt="image" src="https://github.com/user-attachments/assets/2465ab4c-43bb-4d6b-aeed-c60a2cd2462e" />
+
+Now this dockerfile has already started ngnix also so we can see the website if inbound rule of 8080 implemented properly on security groups:  
+
+<img width="764" height="204" alt="image" src="https://github.com/user-attachments/assets/2f14e393-142b-4016-b0dd-12b66c88dae8" />
 
 
+Now u can push this image too:  
+```
+docker login -u ankitakumari346
+docker push ankitakumari346/new_second_img
+```
 
 
 
