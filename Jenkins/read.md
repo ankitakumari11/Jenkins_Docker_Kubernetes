@@ -138,6 +138,7 @@ Now go to url : http://<public ip of target server>:8080/srtech
 > Now rather than manually pulling code from github , building the code and copy and pasting it to testing server
 > We can automate with the help of Jenkins
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### JENKINS SERVER 
 
@@ -242,15 +243,53 @@ Now go the jenkin's console
 - Build done
 
 > [!IMPORTANT]
-> here see initially we were creating a server , installing java , maven on it and then pulling the code and then going inside the code -> in the directory inside which pom.xml present.
-> Then we ran maven install and it took that pom.xml file and build the code and created a directory "target" and inside which we had .war file.
-> But now we created jenkins server , installed java , maven , jenkins , tomcat on it.
-> Created a job and added Source code management git info and maven code i.e "install" and build it.
-> Now jenkins pulled the code from github to its default/home directory i.e .jenkins and inside webspaces (./jenkins/webspaces) ->srtech.
-> Then jenkins build the code and inside ./jenkins/webspaces/srtech (since pm.xml present) so created a target file and build .war file.
+> - here see initially we were creating a server , installing java , maven on it and then pulling the code and then going inside the code -> in the directory inside which pom.xml present.  
+> - Then we ran maven install and it took that pom.xml file and build the code and created a directory "target" and inside which we had .war file.  
+> - But now we created jenkins server , installed java , maven , jenkins , tomcat on it.  
+> - Created a job and added Source code management git info and maven code i.e "install" and build it.  
+> - Now jenkins pulled the code from github to its default/home directory i.e .jenkins and inside webspaces (./jenkins/webspaces) ->srtech.  
+> - Then jenkins build the code and inside ./jenkins/webspaces/srtech (since pm.xml present) so created a target file and build .war file.  
 
 
 
+### TESTING SERVER 
+- Create a testing server on which testing will be done.
+- apt-get update
+- apt-get install openjdk-17-jdk -y
+- mkdir distro
+- chmod 777 distro
+- cd distro
+- wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.43/bin/apache-tomcat-10.1.43.tar.gz
+- ls
+- tar -xzvf apache-tomcat-10.1.43.tar.gz
+- rm apache-tomcat-10.1.43.tar.gz
+- cd tomcat/webapps
+*Now here we are going to copy the .war file present inside jenkins server and then testing team will test the code*
+
+Now go to jenkins console
+
+- Go to the job
+- Configure
+- In source code management - select None , as we have already pulled the code
+- <img width="1815" height="811" alt="image" src="https://github.com/user-attachments/assets/5f4b81b5-2aa3-44f7-a11a-afd79f389762" />
+
+- Go to build options
+- Remove maven option ( as we have already build it)
+- add execule shell
+- `scp target/srtech.war root@172.31.91.192:/root/distro/apache-tomcat-10.1.43/webapps`
+- The above ip should be private ip of testing server
+- <img width="1894" height="1023" alt="image" src="https://github.com/user-attachments/assets/cdc140db-0ac8-4db7-b20a-4005dcd12adf" />
+
+- Also on other hand u need to create a public a key on jenkins server and copy the key to testing server for authentication
+- Also try to ssh atleast once : `ssh 172.31.91.192` from jenkins server to testing server
+- <img width="1917" height="469" alt="image" src="https://github.com/user-attachments/assets/3abf205f-41c3-4853-b722-519d68b05bb1" />
+
+- Come back to job configue
+- now save
+- build it
+- <img width="1840" height="768" alt="image" src="https://github.com/user-attachments/assets/44df9535-8345-453b-a5f4-4ecd8f148e4b" />
+
+  
 
 
 
