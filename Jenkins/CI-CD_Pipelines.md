@@ -61,15 +61,17 @@
 > - Whenever a new job is run , it's directory is created.
   
   <img width="1018" height="76" alt="image" src="https://github.com/user-attachments/assets/26186806-6207-4309-9f72-6badbc98d34c" />
-]
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+## AUTOMATIC (CI/CD PIPELINE)
 
+Create a job (pipeline job)
 
+<img width="1855" height="637" alt="image" src="https://github.com/user-attachments/assets/554ab1e9-8f72-44c4-9166-2292dbec21d7" />
 
-  
-
-
-
+- Either write the pipeline script
+- Or as a devops engineer u can also write the pipeline script in jenkins file and push in the main code repo and then pull frm there only using
+- Create job-> configure -> pipeline ->definition -> pipeline script from scm - > scm -> git > url -> credentials -> branch -> script path -> jenkins file -> apply
 
   
