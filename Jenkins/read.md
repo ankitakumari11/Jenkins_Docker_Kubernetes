@@ -154,31 +154,36 @@ cd distro
 # install apache-tomcat to run host jenkins on the server (jenkins website)
 wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.43/bin/apache-tomcat-10.1.43.tar.gz
 tar -xzvf apache-tomcat-10.1.43.tar.gz
-x
+rm apache-tomcat-10.1.43.tar.gz
 ```
 
 Now u need to install jenkins:
 
-- Go to website : https://www.jenkins.io/doc/book/installing/linux/
+- Go to website and download the .war file of jenkins sinde webapps of tomcat : https://www.jenkins.io/download/
 - Or directly run below commands (website also has the same commands)
+```
+cd apache-tomcat-10.1.43/webapps
+wget https://get.jenkins.io/war-stable/2.504.3/jenkins.war
+```
+<img width="917" height="51" alt="image" src="https://github.com/user-attachments/assets/8b9c3b4f-e4fc-4496-a6c7-d3f22b86d6f5" />
   
-```
-sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
-  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
-  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-  /etc/apt/sources.list.d/jenkins.list > /dev/null
-sudo apt-get update
-sudo apt-get install jenkins
-```
+
 - Apply inbound rule of 8080 on jenkins server for tomcat
 - start tomcat server now
 ```
 cd distro/tomcat-apache10/bin
 ./startup.sh
 ```
+
+<img width="944" height="472" alt="image" src="https://github.com/user-attachments/assets/fe78dbb5-792e-49af-b53e-82672aba822a" />
+
+*Here .jenkins is the home directory for jenkins and since tomcat has jenkins application side it so we will write /jenkins in the url.*
+
 - go to url : http://<public ip of server>:8080/jenkins
 - From jenkins server copy the password from : cat /var/lib/jenkins/secrets/initialAdminPassword
+  
+<img width="1639" height="1063" alt="image" src="https://github.com/user-attachments/assets/defc89f8-3872-44bd-add0-903df9596ee4" />
+  
 - Install necessary plugins
   
 <img width="1917" height="1063" alt="image" src="https://github.com/user-attachments/assets/8f2b7b94-b848-4684-8b1d-dc032de9325f" />
@@ -190,3 +195,67 @@ cd distro/tomcat-apache10/bin
 - Create your account and keep the credentials with yourself
 
 <img width="1499" height="969" alt="image" src="https://github.com/user-attachments/assets/1d19117e-becd-4dcd-ad91-6a73e01906af" />
+
+> [!NOTE]
+> Now initially we created 2 servers (source and testing) , source on which devops engineer clone the code and build it and then copy the .war file to testing server\
+for testing purpose.
+> But now we directly create jenkins server and njenkins will pull the code , build it and copy the code to the testing server.  
+
+Now on jenkins dashboard;
+- Create a new job
+- select freestyle project
+   
+<img width="1447" height="853" alt="image" src="https://github.com/user-attachments/assets/03fc5097-9bc8-470e-82fb-6234dc43c049" />
+
+- Go to souce code management
+  - write your github url like: https://github.com/prasad-srtech/srtech.git
+  - Enter your credentials
+    <img width="1481" height="937" alt="image" src="https://github.com/user-attachments/assets/c91895d4-80a0-40f5-ba0c-2b7b436fd7de" />
+  - Select the branch
+- Now save
+- build it
+  - <img width="1009" height="1043" alt="image" src="https://github.com/user-attachments/assets/05159f46-e991-4f43-9f28-5bd80dfc8043" />
+
+- It will just pull the code from github
+- In the console output , u can see where it pulled the code from github
+  - <img width="1386" height="666" alt="image" src="https://github.com/user-attachments/assets/d841c5d7-2da9-410e-b4c1-be63678618be" />
+- Go to the server and check if the code present
+  - <img width="818" height="118" alt="image" src="https://github.com/user-attachments/assets/ec531024-5d05-4204-9cc2-fb23d640ccaf" />
+  - <img width="909" height="157" alt="image" src="https://github.com/user-attachments/assets/8c83ddab-58df-4deb-b791-fe95eac84770" />
+
+
+Now install maven on the jenkins server to build the code:
+
+- `apt-get install maven`
+
+Now go the jenkin's console 
+
+- click on configure on the job
+- In build option , select maven
+- <img width="1877" height="993" alt="image" src="https://github.com/user-attachments/assets/2b7a6a33-e390-49d8-a586-9ade53bfbd25" />
+- Write `install` in goal becoz since it is already maven so no need to write mvn
+- <img width="1920" height="1023" alt="image" src="https://github.com/user-attachments/assets/14b3bcc1-0faf-48da-a85c-069d1b851fad" />
+- Now build again and see the console output
+- <img width="1884" height="1007" alt="image" src="https://github.com/user-attachments/assets/959a3e70-b288-4d77-a3ba-ee24b4f9af23" />
+- Now inside `cd /root/.jenkins/workspace/srtech` , you will see target and inside target .war file is present.
+- <img width="1837" height="328" alt="image" src="https://github.com/user-attachments/assets/74aa7b74-f710-4085-b8e3-d640a4da30fd" />
+- Build done
+
+> [!IMPORTANT]
+> here see initially we were creating a server , installing java , maven on it and then pulling the code and then going inside the code -> in the directory inside which pom.xml present.
+> Then we ran maven install and it took that pom.xml file and build the code and created a directory "target" and inside which we had .war file.
+> But now we created jenkins server , installed java , maven , jenkins , tomcat on it.
+> Created a job and added Source code management git info and maven code i.e "install" and build it.
+> Now jenkins pulled the code from github to its default/home directory i.e .jenkins and inside webspaces (./jenkins/webspaces) ->srtech.
+> Then jenkins build the code and inside ./jenkins/webspaces/srtech (since pm.xml present) so created a target file and build .war file.
+
+
+
+
+
+
+
+
+
+
+
