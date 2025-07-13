@@ -108,7 +108,102 @@ kubeadm join 172.31.80.183:6443 --token rsfa3d.b94tl7rq876xh7t7 \
              <img width="1785" height="262" alt="image" src="https://github.com/user-attachments/assets/425a8b15-b963-4c0a-8f09-58c82543a7f4" />
   
 - now we need to start these 2 services first : coredns
-- 
+- go to url: https://kubernetes.io/docs/concepts/cluster-administration/addons/ -->click "Weave Net "  ----->  https://github.com/rajch/weave#using-weave-on-kubernetes
+```
+kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.29/net.yaml
+```
+- if above not working then again restart the kubelet and containerd:
+```
+root@ip-172-31-94-140:~# systemctl restart kubelet
+root@ip-172-31-94-140:~# systemctl restart containerd
+root@ip-172-31-94-140:~# kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.29/net.yaml
+```
+- Now it will start
+              <img width="1888" height="370" alt="image" src="https://github.com/user-attachments/assets/bce38e64-0b34-464e-9365-afdc909d2adf" />
+- `kubectl get pods --all-namespaces` , now u will all pods are ready
+              <img width="1898" height="550" alt="image" src="https://github.com/user-attachments/assets/e4809114-102a-4a9e-af6f-dff80c8a3bf1" />
+
+
+### STEPS FOR WORKER NODES
+
+- `kubectl get pods` (if doesn't work then restart , if then also then ignore)
+- `rm /etc/containerd/config.toml`
+- `systemctl restart containerd`
+- `kubeadm reset`
+- run below command to join this worker node with the control plane (master node) , u need to copy this command from kubeadm init output of master plane:
+```
+kubeadm join 172.31.80.183:6443 --token rsfa3d.b94tl7rq876xh7t7 \
+        --discovery-token-ca-cert-hash sha256:a024f13c9d0bf1ed63185f56462c83442a294f62dcd3ab3774f51249f8c68b47
+```
+- Now the worker node is joined to master node.
+
+### MASTER NODE
+
+- Again go to master node and now check the nodes
+```
+root@ip-172-31-80-14:~# kubectl get nodes
+NAME              STATUS   ROLES           AGE     VERSION
+ip-172-31-80-14   Ready    control-plane   40m     v1.33.2
+ip-172-31-93-12   Ready    <none>          2m50s   v1.33.2
+```
+- now if the above code shows not ready then again run:(the above shows the slave node too now).  
+- Now since master and slave/worker nodes are ready now. We can go further to create pods for container. We will create pods using **Kind:pod** in yml.
+
+| Term                | Definition                                                                 | Context                        |
+|---------------------|----------------------------------------------------------------------------|--------------------------------|
+| `kind` (CLI tool)   | A CLI tool named **"Kubernetes IN Docker"** used to create local clusters inside Docker containers. Ideal for testing and CI environments. | Local Kubernetes cluster setup |
+| `kind: Pod`         | A field in a Kubernetes YAML manifest that tells Kubernetes to create a **Pod**, the smallest deployable unit that runs containers. | Kubernetes YAML definition     |
+| `kind: Deployment`  | A field in a Kubernetes YAML manifest that tells Kubernetes to create a **Deployment**, which manages Pods by handling scaling, rolling updates, and self-healing. | Kubernetes YAML definition     |
+
+- Create a yml file- vi pod.yml
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ngnix-prod
+  labels:
+    env: prod
+    version: 1.2.3
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx
+    ports:
+    - containerPort: 80
+```
+- *Here we are creating a pod named nginx-prod , and inside that pod we are creating a container named nginx-container made from image nginx*  
+- Now apply the yml file:  
+`kubectl apply -f pod.yml`
+                 <img width="1894" height="541" alt="image" src="https://github.com/user-attachments/assets/46a537a8-519b-4bbf-951b-c60005d73601" />
+
+> [!NOTE]
+> - Creating Pods directly using kind: Pod in on-premises Kubernetes (or any Kubernetes cluster) is not recommended for production, because if the Pod crashes or the node goes down, Kubernetes does not automatically recreate it.
+> - Instead, it's better to use a Deployment object (defined using kind: Deployment in a YAML file). A Deployment ensures that the desired number of Pod replicas are always running.
+> - This applies to both on-prem Kubernetes and managed clusters like EKS (Amazon Elastic Kubernetes Service).
+> - In EKS, for example, you can define a deployment.yaml file with multiple replicas. If any Pod fails, Kubernetes will automatically reschedule a new one, and you can also enable auto-scaling to scale Pods up or down based on load.
+
+
+#### 🚀 Why Use EKS Instead of On-Prem Kubernetes?
+
+| **Factor**              | **EKS (Amazon EKS)**                                           | **On-Prem Kubernetes**                                |
+|-------------------------|----------------------------------------------------------------|--------------------------------------------------------|
+| **Setup & Maintenance** | ✅ AWS manages control plane, networking, upgrades              | ❌ You manage everything (complex & manual)            |
+| **High Availability (HA)** | ✅ Built-in multi-AZ HA, fault-tolerant                     | ❌ You must manually configure HA                      |
+| **Security & Compliance** | ✅ Integrated with IAM, VPC, private endpoints              | ❌ You build security from scratch                     |
+| **Scaling**             | ✅ Auto-scaling of nodes and pods                              | ❌ Manual setup and tuning required                    |
+| **Monitoring & Logging**| ✅ CloudWatch, X-Ray, etc. integrated easily                   | ❌ You must integrate & maintain your own              |
+| **Cost**                | 💰 Pay-as-you-go (no hardware cost)                            | 💻 High upfront cost (hardware, power, etc.)           |
+| **Upgrades**            | ✅ Simple version upgrades via console or CLI                  | ❌ You must upgrade Kubernetes manually                |
+| **Disaster Recovery**   | ✅ Backup options via EBS snapshots, multi-region              | ❌ Needs in-house DR planning                          |
+| **DevOps Integration**  | ✅ Easy CI/CD integration with AWS/GitHub                      | ❌ You configure CI/CD pipelines manually              |
+| **Time to Deploy**      | ⚡ Minutes                                                     | 🕒 Days or weeks                                       |
+
+
+## EKS- CLUSTER
+
+
+
+
 
 
 
