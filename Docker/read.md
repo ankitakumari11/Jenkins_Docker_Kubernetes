@@ -180,24 +180,57 @@ docker push ankitakumari346/new_second_img
 
 1. Create vm
 2. take connection with the vm
-3. `cd`
-4. `mkdir source`
-5. `cd source`
-6. `git clone https://github.com/prasad-gamut/gamutkart2.git`
-7. `cd gamutkart2/`
-8. `ls`
-9. `cat Dockerfile`
-10. `docker build -t "ankitakumari346/gamutkart-img" .`
-11. `docker images`
-12. `docker run -it -p 8080:8080 --name gamut-container ankitakumari346/gamutkart-img /bin/bash`
-13. Add inbound rule of 8080 from 0.0.0.0/0
-14. Go to url : http<public-ip of the server>:8080/gamutkart
-15. On the server: exit from container
-16. Push the image to docker-hub now:
+3. `apt-get update -y`
+4. `cd`
+5. `mkdir source`
+6. `cd source`
+7. `git clone https://github.com/prasad-gamut/gamutkart2.git`
+8. `cd gamutkart2/`
+9. `ls`
+    <img width="1724" height="212" alt="image" src="https://github.com/user-attachments/assets/7635dc2d-bbfb-42ca-9e23-b7e78a59b3ec" />
+  
+11. `cat Dockerfile`
+    <img width="1096" height="261" alt="image" src="https://github.com/user-attachments/assets/66455925-63eb-48e2-b25e-acdb868cde40" />
+
+13. Install docker on the server to create image out of this repository:
+    - `curl -fsSL https://get.docker.com -o get-docker.sh`
+    - `sudo sh get-docker.sh`
+    
+15. Now build image frm this github repo: `docker build -t "ankitakumari346/gamutkart-img" .`
+    <img width="1920" height="418" alt="image" src="https://github.com/user-attachments/assets/36e1ab42-7936-4245-b63a-bc09aac0c387" />
+
+17. Now we can see  , image is formed: `docker images`
+    <img width="1198" height="115" alt="image" src="https://github.com/user-attachments/assets/695bca45-5bb7-4b49-af40-a965608d7233" />
+
+19. Lets create container from this image and run the container: `docker run -it -p 8080:8080 --name gamut-container ankitakumari346/gamutkart-img /bin/bash`
+    <img width="1875" height="247" alt="image" src="https://github.com/user-attachments/assets/6f01df87-5f8a-4d64-88ec-a5e52be3e13a" />
+
+21. Add inbound rule of 8080 from 0.0.0.0/0
+    <img width="1859" height="770" alt="image" src="https://github.com/user-attachments/assets/1eec49c2-d7c6-45b9-9e8e-d0fe4604a8e5" />
+
+23. Go to url : http<public-ip of the server>:8080/gamutkart/
+    <img width="1919" height="670" alt="image" src="https://github.com/user-attachments/assets/69deb5a8-b26b-4a74-87f9-220557131ba9" />
+
+> [!NOTE]
+> Now you can see , inside the container , due to the docker file. It automatically ran , apt-get update , installed jdk , copied the apache-tomcat.tar.gz from exisiting repo to the container/image  inside root/ , copied the .war file from target/.war from repo to the /root/apache/webapps inside container/image and when container started , it ran the startup.sh automatically.
+
+<img width="1873" height="373" alt="image" src="https://github.com/user-attachments/assets/2d560597-3efb-4921-8450-4274e1272f28" />
+
+
+25. On the server: exit from container
+26. Push the image to docker-hub now:
 ```
-docker u login ankitakumari346
+docker -u login ankitakumari346
 docker push ankitakumari346/gamutkart-img
 ```
+
+<img width="1340" height="279" alt="image" src="https://github.com/user-attachments/assets/55b89afa-c874-4ef7-8616-7765062d462b" />
+
+Go to docker-hub and check:  
+
+<img width="1900" height="630" alt="image" src="https://github.com/user-attachments/assets/29f40330-388a-451c-a503-01cc9a848e1b" />
+
+
 
 
 
