@@ -174,6 +174,31 @@ docker push ankitakumari346/new_second_img
 ```
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## CREATING AN IMAGE FROM GITHUB REPO - GAMUTKART
+
+1. Create vm
+2. take connection with the vm
+3. `cd`
+4. `mkdir source`
+5. `cd source`
+6. `git clone https://github.com/prasad-gamut/gamutkart2.git`
+7. `cd gamutkart2/`
+8. `ls`
+9. `cat Dockerfile`
+10. `docker build -t "ankitakumari346/gamutkart-img" .`
+11. `docker images`
+12. `docker run -it -p 8080:8080 --name gamut-container ankitakumari346/gamutkart-img /bin/bash`
+13. Add inbound rule of 8080 from 0.0.0.0/0
+14. Go to url : http<public-ip of the server>:8080/gamutkart
+15. On the server: exit from container
+16. Push the image to docker-hub now:
+```
+docker u login ankitakumari346
+docker push ankitakumari346/gamutkart-img
+```
+
 
 
 
