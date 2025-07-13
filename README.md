@@ -30,4 +30,7 @@ Now lets start from beginning
 - Rather than writing pipeline script , devops engineer can write the jenkins file inside github itself and then we can pull it using "Pipeline script from SCP".
   
 ### DOCKER  
-- 
+- Now rather than installing tomcat ,jdk and other tools again and again on testing , jenkins server. We can create container and images.
+- lets take example of gamutkart, We created a vm clones gamutkart2.git and inside it a Dockerfile present which is going to create an image from ubuntu , install jdk , copy apache-tomcat.tar.gz frm repo to image's /root/, copy the target/gamutkart.war from the repo to the image's /root/apache-tomcat/webapps and then start the tomcat.
+- So once we build the image using that docker file , now in the image we have jdk, apache-tomcat , .war file and tomcat will start automatically once any container is build from that image.
+- So once jenkin's build the code i.e /target/.war file , we can create a image from it and then we can create any number of containers for testing purposes using dockerfile and no need to  install jdk, tomcat,copying .war file again and again.
