@@ -230,10 +230,3 @@ Go to docker-hub and check:
 
 <img width="1900" height="630" alt="image" src="https://github.com/user-attachments/assets/29f40330-388a-451c-a503-01cc9a848e1b" />
 
-
-
-
-
-
-
-
