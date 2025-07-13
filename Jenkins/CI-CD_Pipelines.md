@@ -73,5 +73,48 @@ Create a job (pipeline job)
 - Either write the pipeline script
 - Or as a devops engineer u can also write the pipeline script in jenkins file and push in the main code repo and then pull frm there only using
 - Create job-> configure -> pipeline ->definition -> pipeline script from scm - > scm -> git > url -> credentials -> branch -> script path -> jenkins file -> apply
+- Github url: https://github.com/ankitakumari11/airtel-kotak.git
+- jenkins file content:
+- ```
+  pipeline {
+    agent any
+
+    stages {
+        stage('Clone-Repo') {
+	    	steps {
+	        	checkout scm
+	    	}
+        }
+	stage('Build') {
+		steps {
+			sh 'mvn install'
+		}
+	}	
+ 
+	stage ('Compile'){
+	        steps {
+			sh 'mvn clean compile'
+                }
+	}
+
+	stage('Run Tests') {
+	    steps {
+	       sh 'mvn test'
+	    }
+	}
+
+        stage('Package as WAR') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+	stage('Deployment') {
+	   steps {
+		sh 'scp target/srtech.war root@172.31.22.116:/root/distros/apache-tomcat-10.1.40/webapps'
+	}
+    }
+}
+}
+```
 
   
