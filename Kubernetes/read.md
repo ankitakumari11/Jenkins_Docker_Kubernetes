@@ -1,7 +1,7 @@
 # Kubernetes
   
 It is a container orchestration tool which is used to manage containers.There are 2 methods to build containers:  
-1. On-premise K8s: Create a vm and setup K8 on it from beginning.
+1. On-premise K8s (open source) : Create a vm and setup K8 on it from beginning.
 2. Managed K8s: AWS will provide ready-made Kubenetes as a service called EKS(elastic kubernetes service).
    
       <img width="1024" height="1024" alt="ChatGPT Image Jul 9, 2025, 02_28_56 AM" src="https://github.com/user-attachments/assets/2c0f6dc5-4ff4-40dc-a8d9-4d528432c1a8" />
