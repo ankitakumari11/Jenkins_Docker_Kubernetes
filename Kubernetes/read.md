@@ -21,7 +21,7 @@ kubeadm stands for Kubernetes Admin.kubeadm is a tool provided by Kubernetes tha
 | Generate certificates and config| `kubeadm config`| Prepares configs and security artifacts        |
 
 🚀 What is Minikube?  
-Minikube is a tool that lets you run a single-node Kubernetes cluster locally on your laptop or desktop.It’s perfect for:  
+Minikube is a tool that lets you run a single-node Kubernetes cluster locally on your laptop or desktop where the master and worker processes are on the same machine..It’s perfect for:  
 - Learning Kubernetes concepts
 - Testing applications locally before deploying to real clusters
 - Practicing Kubernetes commands (kubectl, deployments, services, etc.)
