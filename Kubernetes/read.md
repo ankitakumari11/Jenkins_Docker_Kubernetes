@@ -201,6 +201,61 @@ spec:
 
 ## EKS- CLUSTER
 
+1. Create EC-2 instance (t2-medium)(ubuntu).
+2. Go to IAM ->create user ->administrator policy
+3. Go to that user -> access key->generate->CLI->Create key
+4. Take connection to your vm
+5. Download AWS CLI using url: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+apt-get update
+apt-get install unzip
+unzip awscliv2.zip
+sudo ./aws/install
+```
+7. `aws configure`
+```
+AWS Access Key ID [None]: AKIAQ54TZPMGISXOEV7P
+AWS Secret Access Key [None]: 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
+Default region name [None]: us-east-1
+Default output format [None]: json
+```
+7. Install Kubect using url: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+```
+sudo apt-get update
+# apt-transport-https may be a dummy package; if so, you can skip that package
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg # allow unprivileged APT programs to read this keyring
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list   # helps tools such as command-not-found to work correctly
+sudo apt-get update
+sudo apt-get install -y kubectl
+```
+8. Install **eksctl** on the server using url:https://eksctl.io/installation/
+```
+# for ARM systems, set ARCH to: `arm64`, `armv6` or `armv7`
+ARCH=amd64
+PLATFORM=$(uname -s)_$ARCH
+
+curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+
+# (Optional) Verify checksum
+curl -sL "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_checksums.txt" | grep $PLATFORM | sha256sum --check
+
+tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
+
+sudo install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
+```
+10. `eksctl version`
+11. Create eks cluster:
+```
+eksctl create cluster --name eks-airtel --region us-east-1 --nodegroup-name airtel-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 3 --managed
+```
+12. Get cluster infor:
+```
+eksctl get cluster
+```
 
 
 
