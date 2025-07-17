@@ -1,4 +1,4 @@
-# Kubernetes
+<img width="1920" height="134" alt="image" src="https://github.com/user-attachments/assets/7108242f-289b-43b0-b59a-c0e85e0cf2f2" /># Kubernetes
   
 It is a container orchestration tool which is used to manage containers.There are 2 methods to build containers:  
 1. On-premise K8s (open source) : Create a vm and setup K8 on it from beginning.
@@ -220,7 +220,19 @@ AWS Secret Access Key [None]: V5+Pn/NpPcP2Ezs87d9BbSmWXmYTZeOC3iWbDDDS
 Default region name [None]: us-east-1
 Default output format [None]: json
 ```
-7. Install Kubect using url: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+> [!NOTE]
+> **Typical Workflow**:  
+> - Use eksctl to create the EKS cluster.
+> - Use aws eks update-kubeconfig to configure kubectl.
+> - Use kubectl to deploy and manage your applications.
+  
+7. Install Kubect using url: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/  
+Purpose: Interact with Kubernetes clusters (any, including EKS).Use case:-  
+- Deploy applications (e.g., kubectl apply -f app.yaml)
+- Get status of resources (e.g., kubectl get pods, kubectl get svc)
+- Manage Kubernetes objects like:Pods, Services, Deployments, Nodes, ConfigMaps, Secrets, etc.
+- Run commands inside pods (e.g., kubectl exec, kubectl logs)
+  
 ```
 sudo apt-get update
 # apt-transport-https may be a dummy package; if so, you can skip that package
@@ -233,6 +245,7 @@ sudo apt-get update
 sudo apt-get install -y kubectl
 ```
 8. Install **eksctl** on the server using url:https://eksctl.io/installation/
+- Purpose: Create, manage, and delete EKS clusters on AWS.  
 ```
 # for ARM systems, set ARCH to: `arm64`, `armv6` or `armv7`
 ARCH=amd64
@@ -250,19 +263,68 @@ sudo install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
 10. `eksctl version`
 11. Create eks cluster:
 ```
-eksctl create cluster --name eks-airtel --region us-east-1 --nodegroup-name airtel-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 3 --managed
+eksctl create cluster --name eks-kotak --region us-east-1 --nodegroup-name kotak-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 3 --managed
 ```
+
+   <img width="1920" height="139" alt="image" src="https://github.com/user-attachments/assets/31d12b82-9486-4b5f-888f-e52af8cdf163" />
+  
 12. Get cluster infor:
 ```
 eksctl get cluster
 ```
-13. run below update command. It is used to configure kubectl to connect to your EKS (Elastic Kubernetes Service) cluster.It updates your local kubeconfig file (typically at ~/.kube/config) so that the kubectl CLI can communicate with the EKS cluster named kotak-eks in the us-east-1 region.After running this, you can use:`kubectl get nodes` and all.  
+  
+   <img width="1897" height="103" alt="image" src="https://github.com/user-attachments/assets/9ed1fab0-2f5e-4082-9d32-118048f827a1" />  
+
+  
+13. run below update command. It is used to configure kubectl to connect to your EKS (Elastic Kubernetes Service) cluster.It updates your local kubeconfig file (typically at ~/.kube/config) so that the kubectl CLI can communicate with the EKS cluster named kotak-eks in the us-east-1 region.After running this, you can use:`kubectl get nodes` and all.
+   
 ```
 aws eks update-kubeconfig --name kotak-eks --region us-east-1
 ```
+  
+<img width="1920" height="79" alt="image" src="https://github.com/user-attachments/assets/aef2499d-5d4f-4cc1-875c-cf32601408a1" />
+  
+  
+14. Check the nodes:`kubectl get nodes`
+  
+<img width="1920" height="134" alt="image" src="https://github.com/user-attachments/assets/03305b48-5bb1-4736-ba87-c01943e16573" />
+               
+15. Create Deployment.yml to create 4 replicas(pods) having a container each with ngnix image.
+vi Deployment  
+```
+apiVersion: apps/v1              # Specifies the API version to use (apps/v1 is the stable version for Deployments)
+kind: Deployment                 # Declares that this YAML is defining a Deployment object
+metadata:                        # Metadata about the Deployment
+  name: nginx-prod-deploy        # Name of the Deployment
+  labels:                        # Labels to organize and identify the Deployment
+    app: nginx-app-prod          # A custom label with key "app" and value "nginx-app-prod"
+spec:                            # Desired state specification for the Deployment
+  replicas: 6                    # Number of desired Pod replicas (6 Pods will be created)
+  selector:                      # Tells the Deployment how to find which Pods it manages
+    matchLabels:                 
+      app: nginx-pod             # Matches Pods that have the label "app: nginx-pod"
+  template:                      # Template for creating the Pods
+    metadata:                    # Metadata for each Pod created by the Deployment
+      labels:
+        app: nginx-pod           # Each Pod will have this label; must match the selector above
+    spec:                        # Specification of the Pod (what’s inside the Pod)
+      containers:                # List of containers to run in the Pod
+        - name: nginx-container  # Name of the container
+          image: nginx           # Docker image to use for the container (nginx is pulled from Docker Hub)
+          ports:
+            - containerPort: 80  # Exposes port 80 inside the container (used by Nginx). Port 80 is open inside the container to serve web traffic.
+```
+16. Run the above deployment: `kubectl apply -f Deployment.yml`
+  
+  <img width="1891" height="80" alt="image" src="https://github.com/user-attachments/assets/c669a38c-7912-4e98-9055-7cf14f48698d" />
 
+18. Get information about pods, deployments and service:
+```
+kubectl get pods
+kubectl get deployments
+kubectl get service
+```
 
-
-
+<img width="1913" height="397" alt="image" src="https://github.com/user-attachments/assets/2c81579d-8b82-4f2e-8ebb-dc300d1edb86" />
 
 
