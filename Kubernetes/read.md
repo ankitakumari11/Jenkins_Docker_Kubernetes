@@ -328,3 +328,38 @@ kubectl get service
 <img width="1913" height="397" alt="image" src="https://github.com/user-attachments/assets/2c81579d-8b82-4f2e-8ebb-dc300d1edb86" />
 
 
+## SERVICE : NODEPORT
+
+17. Create a NodePort service to :This is used to access your app outside the cluster , helps to expose pods.
+- `vi service.yml`
+  
+```
+apiVersion: v1
+kind: Service
+metadata:
+    name: nginx-prod-service
+    labels:
+      app: nginx-app-prod-service
+spec:
+  selector:
+    app: nginx-pod
+  type: NodePort
+  ports:
+  - nodePort: 31000
+    port: 80
+    targetPort: 80
+```
+
+18. - `kubectl apply -f service.yml`
+    - `kubectl get service`
+
+<img width="1920" height="169" alt="image" src="https://github.com/user-attachments/assets/9b150dae-0753-4424-bc1d-9aa54e090a4c" />
+
+19. `kubectl describe service nginx-prod-service`
+
+<img width="1920" height="494" alt="image" src="https://github.com/user-attachments/assets/38966d12-45b4-4bec-b200-d5558706149c" />
+
+20. `kubectl get pods -o wide`
+
+<img width="1920" height="398" alt="image" src="https://github.com/user-attachments/assets/c9073dc0-25bd-4c55-98c2-8557e5317d1e" />
+
