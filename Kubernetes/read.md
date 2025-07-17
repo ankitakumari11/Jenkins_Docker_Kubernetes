@@ -256,6 +256,10 @@ eksctl create cluster --name eks-airtel --region us-east-1 --nodegroup-name airt
 ```
 eksctl get cluster
 ```
+13. run below update command. It is used to configure kubectl to connect to your EKS (Elastic Kubernetes Service) cluster.It updates your local kubeconfig file (typically at ~/.kube/config) so that the kubectl CLI can communicate with the EKS cluster named kotak-eks in the us-east-1 region.After running this, you can use:`kubectl get nodes` and all.  
+```
+aws eks update-kubeconfig --name kotak-eks --region us-east-1
+```
 
 
 
