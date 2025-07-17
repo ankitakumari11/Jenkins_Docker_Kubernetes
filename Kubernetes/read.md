@@ -359,7 +359,207 @@ spec:
 
 <img width="1920" height="494" alt="image" src="https://github.com/user-attachments/assets/38966d12-45b4-4bec-b200-d5558706149c" />
 
+> [!NOTE]
+> - nginx-prod-service is a NodePort service.It has a Cluster IP: 10.100.226.252 (internal to the cluster).
+> - Exposes port 80 internally, and maps it to Node port 31000.
+> - So, if your node's public IP is x.x.x.x, you can access your app at:http://x.x.x.x:31000
+  
 20. `kubectl get pods -o wide`
 
 <img width="1920" height="398" alt="image" src="https://github.com/user-attachments/assets/c9073dc0-25bd-4c55-98c2-8557e5317d1e" />
 
+> [!NOTE]
+> **About the Pod IPs (192.168.x.x)**:  
+> - These are private IPs assigned to pods by the CNI (Container Network Interface) plugin (usually AWS VPC CNI in EKS).
+> - The IPs come from the subnets of your VPC, just like EC2 instances.
+> - These IPs are only reachable within the cluster (unless you set up special networking or expose via a service).
+> - Pod IPs can change if the pod is recreated.
+> - What it’s used for:
+>   - This IP is used by other pods inside the cluster to communicate directly with it.Example: A frontend pod calls a backend pod via its pod IP.
+>   - Kubernetes Services (like ClusterIP, NodePort) forward traffic to the pod’s IP.The Service acts like a load balancer, forwarding requests to the correct Pod IP and port. 
+
+21. Now to go your worker nodes SG and add inbound rule from 0.0.0.0/0 on port 31000 and then try to access on : http://node-ip:31000
+
+<img width="1920" height="474" alt="image" src="https://github.com/user-attachments/assets/d4377e24-b215-48cd-947a-a961b462ee5f" />
+
+## SERVICE : LOADBALANCER  
+
+21. We will deploy the gamutkart application on pods using docker images from docker-hub
+22. Create deploy-gamutkart.yml file:
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: gamutkart-deploy
+    labels:
+      app: gamutkart-app
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: gamutkart-app
+  template:
+    metadata:
+      labels:
+        app: gamutkart-app
+    spec:
+      containers:
+        - name: gamutkart-container
+          image: dprasaddevops/gamutkart-img8
+          ports:
+          - containerPort: 8080
+          command: ["/bin/sh"]
+          args:  ["-c", "/root/apache-tomcat-9.0.85/bin/startup.sh; while true; do sleep 1; done;"]
+```
+23. Create service-gamutkart.yml
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: gamutkart-prod
+  labels:
+    app: gamutkart
+    env: prod
+spec:
+  type: LoadBalancer
+  selector:
+    app: gamutkart-app
+  
+  ports:
+  - nodePort: 32000
+    port: 8080
+    targetPort: 8080
+```
+24. Apply both the .yml files
+```
+kubectl apply -f deploy-gamutkart.yml
+kubectl apply -f service-gamutkart.yml
+```
+
+<img width="1920" height="58" alt="image" src="https://github.com/user-attachments/assets/a35159b2-c703-4ef6-9844-2d72ef77d234" />
+<img width="1918" height="63" alt="image" src="https://github.com/user-attachments/assets/17485126-6394-4d1f-bb25-dee27587c978" />
+
+25. Copy load balancer's address: `kubectl get service`
+  
+<img width="1915" height="237" alt="image" src="https://github.com/user-attachments/assets/e0a0fd87-b6c1-4795-8551-2415f82cf700" />
+  
+27. Open in the url: http://<lb address>:8080/gamutkart
+  
+<img width="1919" height="660" alt="image" src="https://github.com/user-attachments/assets/51e2bc48-5e20-476a-a003-823b2549aecf" />
+
+> [!NOTE]
+> **✅ Exposure Path (LoadBalancer):**
+> - Your app container (in the pod) is running on port 8080.
+> - The Service (gamutkart-prod) maps to those pods and listens on port 8080.
+> - Because type: LoadBalancer is used:
+> - AWS provisions an external ELB (Elastic Load Balancer).
+> - ELB listens on port 8080 (defined by port:).
+> - ELB forwards that to your Kubernetes Service → then to the container port (targetPort: 8080).
+> - 📌 So, port 8080 is exposed publicly via:ELB:8080 → Service:8080 → Pod:8080
+> - The nodePort: 32000 is not used in this flow — it only applies to type: NodePort.
+  
+# PORT FORWARDING
+  
+Port forwarding in Kubernetes is a mechanism that allows you to access services running inside a Kubernetes cluster from your local machine or another external system.
+
+🧵 1. NodePort Service (e.g., NGINX)  
+```
+spec:
+  type: NodePort
+  selector:
+    app: nginx-pod
+  ports:
+  - nodePort: 31000
+    port: 80
+    targetPort: 80
+```
+```
+<YourBrowser> → NodeIP:31000 ─┐
+                             ↓
+                       Service Port 80
+                             ↓
+                        Pod Port 80 (nginx)
+```
+  
+✅ Breakdown:  
+- targetPort: 80 → nginx container is listening on port 80
+- port: 80 → Service receives traffic on port 80 internally
+- nodePort: 31000 → Exposes service on each worker node’s public IP:31000
+- You access it with: http://<Node_Public_IP>:31000
+
+🧵 2. LoadBalancer Service (e.g., Tomcat)  
+```
+spec:
+  type: LoadBalancer
+  selector:
+    app: gamutkart-app
+  ports:
+  - nodePort: 32000   # Optional, AWS doesn’t use this for LB
+    port: 8080
+    targetPort: 8080
+```
+```
+<YourBrowser> → AWS ELB:8080 ─┐
+                             ↓
+                       Service Port 8080
+                             ↓
+                     Pod Port 8080 (Tomcat)
+```
+
+✅ Breakdown:  
+- targetPort: 8080 → Tomcat container listens on 8080
+- port: 8080 → Service listens on 8080
+- nodePort: 32000 → Mostly unused in LoadBalancer; still required in some cases by K8s but ELB doesn’t expose this
+- You access it with:http://<External-ELB-DNS>:8080
+
+🧠 Summary Table  
+| **Keyword** | **Meaning**                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| `targetPort` | The port on the container (pod) that your app listens on                   |
+| `port`       | The port exposed by the Kubernetes Service itself(	Port exposed inside the cluster (for other pods))                          |
+| `nodePort`   | (Only for NodePort & LoadBalancer) A port exposed on worker nodes(External access via <NodeIP>:<nodePort>)          |
+
+## PORT FORWARDING Command
+  
+- Step 1: Use port-forward command
+`kubectl port-forward service/gamutkart-prod 9090:8080`
+- “Please forward my server’s localhost:9090 to the Service’s port 8080, which goes to the Pod’s containerPort 8080.”
+- Step 2: Access the app from the same server:
+  ```
+  curl http://localhost:9090
+  ```
+- flow:
+```
+Your VM (localhost:9090)
+     │
+     ▼
+[Kubernetes Port-Forward Tunnel]
+     │
+     ▼
+Service: gamutkart-prod (port: 8080)
+     │
+     ▼
+Pod (targetPort: 8080 → containerPort: 8080)
+     │
+     ▼
+App running inside container
+```
+
+- `port-forward service/gamutkart-prod 9090:8080 --address 0.0.0.0`
+  - ✅ By Default (without --address),When you run:
+```
+kubectl port-forward service/gamutkart-prod 9090:8080
+```
+  - Kubernetes binds the port only to 127.0.0.1 (i.e., localhost on the VM).
+  - Only processes inside that VM can access localhost:9090.
+  - So:`curl http://localhost:9090` (inside VM) ✅
+  - Browser from your laptop ❌ (because it's not on the VM)
+  - 🔓 With --address 0.0.0.0 `kubectl port-forward service/gamutkart-prod 9090:8080 --address 0.0.0.0` : Tells Kubernetes to bind to all network interfaces on the VM:
+    - 127.0.0.1 (localhost)
+    - 10.x.x.x (private IP)
+    - <public-ip> (public IP if any)
+
+- 🔁 What this means:
+  - Now external machines (like your laptop) can access the VM's 9090 port — if allowed by security/firewall rules.
+  - So this command:`curl http://localhost:9090 `(inside VM) ✅
+  - `http://<VM-public-IP>:9090` (from browser on your laptop) ✅ (if port allowed)
