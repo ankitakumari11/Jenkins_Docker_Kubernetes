@@ -550,10 +550,7 @@ App running inside container
 ```
 kubectl port-forward service/gamutkart-prod 9090:8080
 ```
-  - Kubernetes binds the port only to 127.0.0.1 (i.e., localhost on the VM).
-  - Only processes inside that VM can access localhost:9090.
-  - So:`curl http://localhost:9090` (inside VM) ✅
-  - Browser from your laptop ❌ (because it's not on the VM)
+  - Kubernetes binds the port only to 127.0.0.1 (i.e., localhost on the VM). So only if you are inside the vm then u can access the url like `curl http://localhost:9090` but u can't access from your local laptop's browser.
   - 🔓 With --address 0.0.0.0 `kubectl port-forward service/gamutkart-prod 9090:8080 --address 0.0.0.0` : Tells Kubernetes to bind to all network interfaces on the VM:
     - 127.0.0.1 (localhost)
     - 10.x.x.x (private IP)
