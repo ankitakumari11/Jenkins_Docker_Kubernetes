@@ -1,4 +1,4 @@
-<img width="1920" height="134" alt="image" src="https://github.com/user-attachments/assets/7108242f-289b-43b0-b59a-c0e85e0cf2f2" /># Kubernetes
+# Kubernetes
   
 It is a container orchestration tool which is used to manage containers.There are 2 methods to build containers:  
 1. On-premise K8s (open source) : Create a vm and setup K8 on it from beginning.
