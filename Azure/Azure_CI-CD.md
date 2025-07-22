@@ -1,4 +1,4 @@
-# Azure CI-CD Pipeline
+<img width="1920" height="646" alt="image" src="https://github.com/user-attachments/assets/1b9ace81-0b6f-461d-b2c6-8c0d97ff7fa4" /># Azure CI-CD Pipeline
 
 - Azure devops organisation -> my azure devops organisation -> give credentials
    
@@ -49,7 +49,7 @@
 
 - Here we are going to use pipeline to :
 - 1. Build docker image
-  2. 2. Push image to docker-hub
+- 2. Push image to docker-hub (registery)
 - Select docker (2nd one):
 
   <img width="1919" height="998" alt="image" src="https://github.com/user-attachments/assets/a8168067-4670-47b5-bbe2-229df4f276e9" />
@@ -72,6 +72,298 @@
   <img width="1903" height="1067" alt="image" src="https://github.com/user-attachments/assets/a493990f-a554-45fd-91c4-2b5480d2cfb6" />
 
   <img width="1920" height="997" alt="image" src="https://github.com/user-attachments/assets/6561af5d-d988-4a2f-81d0-585803ec1ca1" />
+
+- Now click on validate:
+
+  <img width="1916" height="908" alt="image" src="https://github.com/user-attachments/assets/6bc3f237-84bb-4e52-a539-c957361984c5" />
+
+- Now we will create one agent becoz when we create an image from vm , it takes by default but here we will be needing agent for that.
+- Remove main -> select paths -> include - > result/* (like gamutkart)
+```
+trigger:
+ paths:
+   include:
+     - result/*
+
+```
+
+  <img width="1920" height="1025" alt="image" src="https://github.com/user-attachments/assets/1f592852-09bb-478f-9d79-f3b1d5db3dd1" />
+
+  <img width="1920" height="1200" alt="Screenshot (1908)" src="https://github.com/user-attachments/assets/69e3dcaa-9bcc-406f-b6ad-fe3d7326dd34" />
+
+   <img width="1920" height="434" alt="image" src="https://github.com/user-attachments/assets/7fd8b5d3-53d9-4658-9c6c-2b83b282986e" />
+
+- Here self becoz it will take repo from self repo
+- in dockerfilepath : your deockerfile path but if u r taking image from docker-hub then u need to give ur credentials too.
+- Here we r taking image from azure registery
+
+  <img width="1920" height="646" alt="image" src="https://github.com/user-attachments/assets/93630c4c-5fb7-4e24-a19f-70810241f887" />
+
+- Remove pool
+
+  <img width="1920" height="915" alt="image" src="https://github.com/user-attachments/assets/fd078b4f-e953-4835-9764-b26cca8bf6b9" />
+
+- current yaml:
+```
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+ paths:
+   include:
+     - result/*
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '18aea5db-c9ef-4cae-9d83-ad2bad91ae17'
+  imageRepository: 'airtelankita'
+  containerRegistry: 'airtelankitaregistery.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/result/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build an image
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+```
+- go to setting - > select your repo - > add
+
+  <img width="1918" height="887" alt="image" src="https://github.com/user-attachments/assets/e49f53bb-0fcd-49eb-be59-ee287f00c681" />
+
+- Write "result" here:
+
+  <img width="1904" height="830" alt="image" src="https://github.com/user-attachments/assets/05019c92-e2bb-46c1-8662-fba3401b29a0" />
+
+- command: build
+
+   <img width="1920" height="552" alt="image" src="https://github.com/user-attachments/assets/76fce55f-8ee3-49ec-86ac-ed248d1f8075" />
+
+
+- Overall pipeline code (yaml)
+```
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+ paths:
+   include:
+     - result/*
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '18aea5db-c9ef-4cae-9d83-ad2bad91ae17'
+  imageRepository: 'airtelankita'
+  containerRegistry: 'airtelankitaregistery.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/result/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build an image
+      inputs:
+        containerRegistry: 'AirtelAnkitaRegistery'
+        repository: '$(imageRepository)'
+        command: 'build'
+        Dockerfile: 'result/Dockerfile'
+        tags: '$(tag)'
+```
+- Now till now our build stage code is ready
+- We will create push stage pipeline also
+- copy build stage code block and paste at the bottom
+- Replace all build words with push
+```
+- stage: Push
+  displayName: Push
+  jobs:
+  - job: Push
+    displayName: Push
+    steps:
+    - task: Docker@2
+      displayName: Push an image
+      inputs:
+        containerRegistry: 'AirtelAnkitaRegistery'
+        repository: '$(imageRepository)'
+        command: 'push'
+        Dockerfile: 'result/Dockerfile'
+        tags: '$(tag)'
+```
+- Click on settings of push and ensure the command is push:
+
+  <img width="1920" height="800" alt="image" src="https://github.com/user-attachments/assets/1b48d08e-5921-489d-ada6-317224de554f" />
+
+- Now write the below code for agent
+- Also we need agent here to push the image to our container-registery
+- for the agent , we need to create one vm
+
+   <img width="1920" height="725" alt="image" src="https://github.com/user-attachments/assets/bc0f4878-2919-43f6-8ee9-7dd0e4f957ae" />
+
+- Now final pipeline yaml code:
+```
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+ 
+trigger:
+ paths:
+   include:
+     - result/*
+ 
+resources:
+- repo: self
+ 
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '18aea5db-c9ef-4cae-9d83-ad2bad91ae17'
+  imageRepository: 'airtelankita'
+  containerRegistry: 'airtelankitaregistery.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/result/Dockerfile'
+  tag: '$(Build.BuildId)'
+ 
+  # Agent VM image name
+  pool:
+    name: 'agent1'
+ 
+stages:
+- stage: Build
+  displayName: Build
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build an image
+      inputs:
+        containerRegistry: 'AirtelAnkitaRegistery'
+        repository: '$(imageRepository)'
+        command: 'build'
+        Dockerfile: 'result/Dockerfile'
+        tags: '$(tag)'
+ 
+- stage: Push
+  displayName: Push
+  jobs:
+  - job: Push
+    displayName: Push
+    steps:
+    - task: Docker@2
+      displayName: Push an image
+      inputs:
+        containerRegistry: 'AirtelAnkitaRegistery'
+        repository: '$(imageRepository)'
+        command: 'push'
+        tags: '$(tag)'
+```
+  
+- Go to azure console
+- Create one vm : name- agent1
+- select your default resource grp
+
+  <img width="1920" height="934" alt="image" src="https://github.com/user-attachments/assets/628381f7-10c3-4483-bc7b-17e940c54ec9" />
+
+- go to your Azure devops
+- Go to agent
+     
+  <img width="1919" height="949" alt="image" src="https://github.com/user-attachments/assets/dd37bfbd-c57d-4186-b99e-24c5d8bb53fe" />
+
+- Add pool
+
+  <img width="1920" height="942" alt="image" src="https://github.com/user-attachments/assets/d3e21db9-be39-4d27-9507-3566b16c130b" />
+
+- add pool - > self hosted - > name : agent1
+
+  <img width="1919" height="995" alt="image" src="https://github.com/user-attachments/assets/47088dc7-aa03-4a81-9a0f-c9eb8285732c" />
+
+  <img width="1919" height="995" alt="image" src="https://github.com/user-attachments/assets/df8f9c5e-dfd8-4568-9571-08c9a83172e4" />
+
+- inside your pool - > click create agent - > new agent
+
+  <img width="1915" height="1021" alt="image" src="https://github.com/user-attachments/assets/c68e5da7-3e29-485a-a9ca-e0a1dedf7b80" />
+
+- click linux and copy the codes and run on the new vm (agent1) which you created.
+
+  <img width="1914" height="1034" alt="image" src="https://github.com/user-attachments/assets/1a93f824-e1d4-4afb-adb4-316231e8a15f" />
+
+- Commands to run on server:
+```
+~/$ mkdir myagent && cd myagent
+wget https://download.agent.dev.azure.com/agent/4.258.1/vsts-agent-linux-x64-4.258.1.tar.gz
+tar zxvf vsts-agent-linux-x64-4.258.1.tar.gz
+./config.sh
+```
+
+<img width="1357" height="769" alt="image" src="https://github.com/user-attachments/assets/0913aa47-d3ec-4640-81b2-802dc6427db1" />
+
+- Go to : https://learn.microsoft.com/en-us/azure/devops/pipelines/?view=azure-devops
+- Agent and pools -> Self-hosted Linux agents
+- On the linux agents page -> copy server url - > https://dev.azure.com/{your-organization}
+- Replace with your name:- > https://dev.azure.com/azuser3774mmllocal
+
+  <img width="1920" height="545" alt="image" src="https://github.com/user-attachments/assets/9f9eb7fb-5399-44ed-95b3-7f47b32bef76" />
+
+- Go back to your server and write in server url:
+
+  <img width="1351" height="770" alt="image" src="https://github.com/user-attachments/assets/b90d35aa-dcad-41ed-920c-99cb11371a05" />
+
+- For PAT (personal access token):
+- Go to your azure devops
+
+  <img width="1920" height="1200" alt="Screenshot (1909)" src="https://github.com/user-attachments/assets/9c9495e9-9b12-42c7-ad17-69aa16571ee6" />
+
+  <img width="1920" height="1200" alt="Screenshot (1910)" src="https://github.com/user-attachments/assets/9da361a6-b79a-423e-9ef8-46818b2568e5" />
+    
+  <img width="1901" height="1020" alt="image" src="https://github.com/user-attachments/assets/2020b3a3-16e2-46c6-a264-644c4ad28c9f" />
+
+- Copy token and first enter and then paste to server
+
+  <img width="1908" height="1021" alt="image" src="https://github.com/user-attachments/assets/f9b14652-18a6-40ab-bab3-bb0adf6188a3" />
+
+- Enter agent pool name : in the yaml code you had written inside pool block -> "agent1"
+
+  <img width="1351" height="471" alt="image" src="https://github.com/user-attachments/assets/65bcafd6-6ab4-416a-b288-76045fb58a7c" />
+
+ - Now run : `./run`
+
+   <img width="1353" height="770" alt="image" src="https://github.com/user-attachments/assets/01af3ab6-ed43-43aa-8663-8233e08af70d" />
+
+- Now you can see , the agent is online after running ./run
+
+  <img width="1920" height="537" alt="image" src="https://github.com/user-attachments/assets/3036806c-e431-4abf-88fb-af7c9bba5d3b" />
+
+- Now go back to your code(pipeline yaml) and run and validate:
+
+  <img width="1911" height="1035" alt="image" src="https://github.com/user-attachments/assets/d2de4c28-0b44-47f4-8163-a4b98d71ac63" />
 
 
 
