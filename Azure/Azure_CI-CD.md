@@ -403,6 +403,20 @@ cd myagent/
 
   <img width="1920" height="756" alt="image" src="https://github.com/user-attachments/assets/05387396-edbe-4bcf-807a-8fa2eb9f98f5" />
 
+- Now the the pipeline is successful.
+- Now go to your server - > install git -> clone the code and run docker compose command -> add ingress rule on port 8080
+```
+sudo su -
+apt-get install git
+git clone https://github.com/ankitakumari11/voting-app.git
+cd <cloned folder>
+docker compose
+```
+- Now go to url: http://<public-ip>:8080 -> http://20.244.10.96:8080/
+
+  <img width="1920" height="534" alt="image" src="https://github.com/user-attachments/assets/41995ffc-888d-4f4c-ab57-c191804a9c2e" />
+
+
 
   
 
