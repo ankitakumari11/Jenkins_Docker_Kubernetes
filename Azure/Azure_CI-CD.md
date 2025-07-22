@@ -412,6 +412,10 @@ git clone https://github.com/ankitakumari11/voting-app.git
 cd <cloned folder>
 docker compose
 ```
+- Add inbound rule:
+
+   <img width="1920" height="953" alt="image" src="https://github.com/user-attachments/assets/faf3cc83-2c13-4257-a9aa-813931e47ed9" />
+    
 - Now go to url: http://<public-ip>:8080 -> http://20.244.10.96:8080/
 
   <img width="1920" height="534" alt="image" src="https://github.com/user-attachments/assets/41995ffc-888d-4f4c-ab57-c191804a9c2e" />
