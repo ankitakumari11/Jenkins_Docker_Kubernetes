@@ -357,13 +357,54 @@ tar zxvf vsts-agent-linux-x64-4.258.1.tar.gz
 
    <img width="1353" height="770" alt="image" src="https://github.com/user-attachments/assets/01af3ab6-ed43-43aa-8663-8233e08af70d" />
 
-- Now you can see , the agent is online after running ./run
+- Now you can see , the agent is online after running `./run.sh`
 
   <img width="1920" height="537" alt="image" src="https://github.com/user-attachments/assets/3036806c-e431-4abf-88fb-af7c9bba5d3b" />
 
 - Now go back to your code(pipeline yaml) and run and validate:
 
   <img width="1911" height="1035" alt="image" src="https://github.com/user-attachments/assets/d2de4c28-0b44-47f4-8163-a4b98d71ac63" />
+
+- Now it is running the code:
+
+  <img width="1917" height="862" alt="image" src="https://github.com/user-attachments/assets/c3220872-3c9e-4e7c-b308-49ef382cc427" />
+
+- Now you will face a lot of errors : first is due to absence of docker so install docker on the server.
+- On the server install docker (u can do it using azureuser)
+- and then run command to give rights to azureuser (i.e put azureuser in docker group so that it can run docker commands becoz u installed docker using azureuser and not using root)
+```
+ sudo usermod -aG docker azureuser
+ sudo systemctl restart docker
+ cd ~/myagent
+./svc.sh restart
+exit
+(again login and run)
+docker ps
+```
+  
+  <img width="1366" height="558" alt="image" src="https://github.com/user-attachments/assets/e9d43d7d-189b-47f9-874e-dcec7568506a" />
+
+- Now on the server run below commands to start the offline agent and make it online
+```
+cd myagent/
+./run.sh
+```
+- Now again go to your pipeline and rerun the pipeline and now it will work fine.
+
+  <img width="1920" height="955" alt="image" src="https://github.com/user-attachments/assets/afbd844a-2777-4b9d-abd7-f7f917d463ae" />
+
+   <img width="1354" height="341" alt="image" src="https://github.com/user-attachments/assets/eb9158b9-ea56-4fdc-8f16-8a1d863dfb73" />
+
+
+- Now go to your azure cloud console and search container registery
+- Now here u will see your image
+
+  <img width="1920" height="580" alt="image" src="https://github.com/user-attachments/assets/7ed40793-ef4d-4f9e-be89-7c903c66c3ab" />
+
+  
+
+
+
 
 
 
