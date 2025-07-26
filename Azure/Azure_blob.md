@@ -54,8 +54,30 @@
 
     <img width="1920" height="150" alt="image" src="https://github.com/user-attachments/assets/1c84e754-d7fa-447e-92c0-5b969cbbdbfd" />
 
+## 🧱 What Happened:  
+  
+- Create Storage Account → Your Azure "building" for storing data.
+- Create a Container → Like a folder inside your storage account.
+- Upload a File (Blob) → You uploaded a file like cat.jpg.
+- Try to Access the File via URL → It failed because you had set the container's access level to Private.
 
+**Why Access Failed**
 
+- Private means only authenticated users/services can access the file.
+- No public (browser) access allowed.
+
+**🔐 Access Levels in Azure Blob Storage (for Containers):**
+| **Access Level** | **Who Can Access?**                                      |
+|------------------|----------------------------------------------------------|
+| Private          | Only authorized users via Azure login/keys               |
+| Blob             | Anyone with the blob URL can access the file             |
+| Container        | Anyone can list all blobs in the container and access them |
+
+**🛠️ What You Did to Fix It:**
+
+- Changed container access level to Blob.
+- Allowed public access to the storage account itself.
+- After both changes, the blob URL worked in a browser.
 
 
 
